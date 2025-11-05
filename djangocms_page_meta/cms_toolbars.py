@@ -19,7 +19,6 @@ PAGE_META_DEFAULT_META_IMAGE_TITLE = _("Default meta image")
 @toolbar_pool.register
 class PageToolbarMeta(CMSToolbar):
     def populate(self):
-
         # if not a page content
         if not isinstance(self.toolbar.obj, PageContent):
             return
@@ -43,12 +42,14 @@ class PageToolbarMeta(CMSToolbar):
         permission = self.page.has_change_permission(self.request.user)
         can_change = self.page and permission
         if has_global_current_page_change_permission or can_change:
-
             current_page_menu = self.toolbar.get_or_create_menu("page")
             super_item = current_page_menu.find_first(Break, identifier=PAGE_MENU_SECOND_BREAK)
             if super_item:
                 super_item = super_item + 1
-            meta_menu = current_page_menu.get_or_create_menu("pagemeta", PAGE_META_MENU_TITLE, position=super_item)
+
+            meta_menu = current_page_menu.get_or_create_menu(
+                "pagemeta", PAGE_META_MENU_TITLE, position=super_item, disabled=not self.toolbar.edit_mode_active
+            )
             position = 0
             # Page tags
             default_meta_image = DefaultMetaImage.objects.first()
