@@ -18,7 +18,6 @@ except ImportError:  # pragma: no cover - django CMS 5.1+
 
     def has_page_permission(user, page, action, use_cache=True):
         site = getattr(page, "site", None)
-        breakpoint()
         if site is None:
             site = page.node.site
         return has_generic_permission(page, user, action, site=site, check_global=False, use_cache=use_cache)
