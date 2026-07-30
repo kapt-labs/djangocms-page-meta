@@ -5,11 +5,24 @@ from cms.toolbar_base import CMSToolbar
 from cms.toolbar_pool import toolbar_pool
 from cms.utils.conf import get_cms_setting
 from cms.utils.i18n import get_language_list, get_language_object
-from cms.utils.permissions import has_page_permission
 from django.urls import NoReverseMatch, reverse
 from django.utils.translation import gettext_lazy as _
 
 from .models import DefaultMetaImage, PageMeta, TitleMeta
+
+# django CMS < 5.1 exposes has_page_permission; 5.1+ replaced it with has_generic_permission.
+try:
+    from cms.utils.permissions import has_page_permission
+except ImportError:  # pragma: no cover - django CMS 5.1+
+    from cms.utils.page_permissions import has_generic_permission
+
+    def has_page_permission(user, page, action, use_cache=True):
+        site = getattr(page, "site", None)
+        breakpoint()
+        if site is None:
+            site = page.node.site
+        return has_generic_permission(page, user, action, site=site, check_global=False, use_cache=use_cache)
+
 
 PAGE_META_MENU_TITLE = _("Meta-information")
 PAGE_META_ITEM_TITLE = _("Common")
